@@ -1,36 +1,43 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Clipboard, Send } from 'lucide-react';
-import { InputGroup, InputGroupInput, InputGroupAddon } from '@/components/ui/input-group';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Clipboard, Send } from "lucide-react";
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+} from "@/components/ui/input-group";
 
+// 1. Updated interface to match what ChatContainer is passing
 interface ChatInputProps {
-  onSendMessage: (url: string) => void;
-  isLoading: boolean;
+  onSend: (url: string) => void;
+  disabled: boolean;
 }
 
-export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
-  const [inputValue, setInputValue] = useState('');
+// 2. Updated the destructured props here
+export function ChatInput({ onSend, disabled }: ChatInputProps) {
+  const [inputValue, setInputValue] = useState("");
 
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
       setInputValue(text);
     } catch {
-      console.error('Failed to read clipboard');
+      console.error("Failed to read clipboard");
     }
   };
 
   const handleSend = () => {
     if (inputValue.trim()) {
-      onSendMessage(inputValue.trim());
-      setInputValue('');
+      onSend(inputValue.trim()); // 3. Updated function call
+      setInputValue("");
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
+    // 4. Updated to use 'disabled' instead of 'isLoading'
+    if (e.key === "Enter" && !e.shiftKey && !disabled) {
       e.preventDefault();
       handleSend();
     }
@@ -46,7 +53,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              disabled={isLoading}
+              disabled={disabled} // 5. Updated prop
               className="placeholder:text-muted-foreground"
             />
             <InputGroupAddon>
@@ -54,7 +61,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
                 variant="ghost"
                 size="sm"
                 onClick={handlePaste}
-                disabled={isLoading}
+                disabled={disabled} // 6. Updated prop
                 className="h-full rounded-r-none border-0"
                 title="Paste from clipboard"
               >
@@ -64,7 +71,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
           </InputGroup>
           <Button
             onClick={handleSend}
-            disabled={isLoading || !inputValue.trim()}
+            disabled={disabled || !inputValue.trim()} // 7. Updated prop
             className="gap-2 bg-primary hover:bg-primary/90"
           >
             <Send className="h-4 w-4" />

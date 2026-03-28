@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Navbar } from '@/components/navbar';
-import { ChatContainer } from '@/components/chat-container';
+import { Navbar } from "@/components/navbar";
+import { ChatContainer } from "@/components/chat-container";
 
 export default function DashboardPage() {
   return (

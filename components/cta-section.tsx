@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export function CtaSection() {
   return (
@@ -17,7 +17,8 @@ export function CtaSection() {
             </h2>
 
             <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-              Join thousands of organizations using PhishGuard to detect and prevent phishing attacks. Start your free trial today.
+              Join thousands of organizations using PhishGuard to detect and
+              prevent phishing attacks. Start your free trial today.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -27,7 +28,11 @@ export function CtaSection() {
                 </Button>
               </Link>
               <Link href="#contact">
-                <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
+                >
                   Schedule Demo
                 </Button>
               </Link>

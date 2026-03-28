@@ -1,9 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: light;
   /* Light mode colors - minimalist & trustworthy */
   --background: oklch(0.98 0 0); /* Off-white bg-slate-50 */
   --foreground: oklch(0.15 0 0); /* Dark text */
@@ -53,6 +54,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.12 0 0); /* Very dark slate */
   --foreground: oklch(0.95 0 0);
   --card: oklch(0.18 0 0); /* Dark cards */
@@ -147,10 +149,12 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  *, ::before, ::after {
+    border-color: var(--color-border);
+    outline-color: color-mix(in srgb, var(--color-ring) 50%, transparent);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }

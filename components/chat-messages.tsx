@@ -1,68 +1,82 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { UserMessage } from '@/components/user-message';
-import { BotAnalysis } from '@/components/bot-analysis';
-import { LoadingState } from '@/components/loading-state';
+import { Message } from "@/components/chat-container";
+import { UserMessage } from "./user-message";
+import { BotAnalysis } from "./bot-analysis";
+import { Loader2, AlertCircle } from "lucide-react";
+import { useEffect, useRef } from "react";
 
-interface Message {
-  id: string;
-  type: 'user' | 'bot';
-  content?: string;
-  url?: string;
-  analysis?: {
-    status: 'safe' | 'suspicious' | 'malicious';
-    confidence: number;
-    ip?: string;
-    domainAge?: string;
-    redirects?: number;
-  };
-  timestamp: Date;
-}
-
-interface ChatMessagesProps {
-  messages: Message[];
+export function ChatMessages({
+  messages,
+  isLoading,
+}: {
+  messages: (Message & { data?: any })[];
   isLoading: boolean;
-}
-
-export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
+    if (scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isLoading]);
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
-        {messages.length === 0 && !isLoading && (
-          <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-              <span className="text-3xl">🔍</span>
+    <div
+      ref={scrollRef}
+      className="flex flex-col gap-6 p-6 overflow-y-auto h-full scroll-smooth"
+    >
+      {messages.length === 0 && !isLoading && (
+        <div className="h-full flex items-center justify-center text-muted-foreground italic">
+          Enter a URL to check its safety status.
+        </div>
+      )}
+
+      {messages.map((msg) => {
+        if (msg.type === "user") {
+          return (
+            <UserMessage
+              key={msg.id}
+              url={msg.data?.url || msg.content || ""}
+            />
+          );
+        }
+
+        if (msg.type === "bot") {
+          // If valid scan result exists
+          if (msg.data && msg.data.verdict) {
+            return (
+              <BotAnalysis
+                key={msg.id}
+                analysis={msg.data}
+                url={msg.data.target_url || ""}
+              />
+            );
+          }
+
+          // IF ERROR MESSAGE (This was the missing piece!)
+          return (
+            <div key={msg.id} className="flex justify-start">
+              <div className="bg-destructive/10 text-destructive border border-destructive/20 p-4 rounded-2xl rounded-tl-none max-w-[85%] flex items-start gap-3 shadow-sm">
+                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold">Validation Error</p>
+                  <p className="text-sm opacity-90">{msg.content}</p>
+                </div>
+              </div>
             </div>
-            <h2 className="text-2xl font-semibold text-foreground">Start Scanning URLs</h2>
-            <p className="max-w-sm text-muted-foreground">
-              Paste a URL below to check if it's safe, suspicious, or potentially malicious. Get instant analysis with detailed insights.
-            </p>
-          </div>
-        )}
+          );
+        }
+        return null;
+      })}
 
-        {messages.map((message) =>
-          message.type === 'user' ? (
-            <UserMessage key={message.id} url={message.url || ''} />
-          ) : (
-            <BotAnalysis key={message.id} analysis={message.analysis} url={message.url || ''} />
-          )
-        )}
-
-        {isLoading && <LoadingState />}
-
-        <div ref={messagesEndRef} />
-      </div>
+      {isLoading && (
+        <div className="flex items-center gap-3 text-muted-foreground animate-pulse pl-2">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <span className="text-sm font-medium">
+            Scanning with PhishGuard AI...
+          </span>
+        </div>
+      )}
     </div>
   );
 }

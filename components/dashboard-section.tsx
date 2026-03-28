@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ChatContainer } from '@/components/chat-container';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChatContainer } from "@/components/chat-container";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function DashboardSection() {
   return (
@@ -15,7 +15,8 @@ export function DashboardSection() {
             Try PhishGuard Now
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Test our URL detection engine instantly. Scan any URL and get detailed analysis.
+            Test our URL detection engine instantly. Scan any URL and get
+            detailed analysis.
           </p>
         </div>
 
@@ -37,28 +38,36 @@ export function DashboardSection() {
 
                 <div className="space-y-6">
                   <div>
-                    <div className="text-sm font-semibold text-primary mb-2">Step 1</div>
+                    <div className="text-sm font-semibold text-primary mb-2">
+                      Step 1
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       Paste or enter any URL you want to check
                     </p>
                   </div>
 
                   <div>
-                    <div className="text-sm font-semibold text-primary mb-2">Step 2</div>
+                    <div className="text-sm font-semibold text-primary mb-2">
+                      Step 2
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       Our AI analyzes the URL in real-time
                     </p>
                   </div>
 
                   <div>
-                    <div className="text-sm font-semibold text-primary mb-2">Step 3</div>
+                    <div className="text-sm font-semibold text-primary mb-2">
+                      Step 3
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       Get instant results with confidence scoring
                     </p>
                   </div>
 
                   <div>
-                    <div className="text-sm font-semibold text-primary mb-2">Step 4</div>
+                    <div className="text-sm font-semibold text-primary mb-2">
+                      Step 4
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       View detailed technical analysis and recommendations
                     </p>
