@@ -165,7 +165,6 @@ export function ChatContainer() {
     if (!url) return;
 
     // --- 1. STRICT URL VALIDATION ---
-    // Rejects spaces, requires at least one dot, and valid domain characters
     const strictUrlPattern =
       /^(https?:\/\/)?([a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(:\d{1,5})?(\/.*)?$/;
 
@@ -199,17 +198,14 @@ export function ChatContainer() {
 
     // --- 2. WHITELIST INTERCEPTION ---
     try {
-      // Parse the URL to safely extract the hostname (add https:// if missing just for parsing)
       const urlObj = new URL(url.startsWith("http") ? url : `https://${url}`);
       const hostname = urlObj.hostname.toLowerCase();
 
-      // Check if the hostname is exactly in the whitelist OR ends with a whitelisted domain (like mail.google.com)
       const isWhitelisted = WHITELISTED_DOMAINS.some(
         (domain) => hostname === domain || hostname.endsWith("." + domain),
       );
 
       if (isWhitelisted) {
-        // Mock a perfect API response instantly
         setTimeout(() => {
           const safeBotMessage: Message = {
             id: (Date.now() + 1).toString(),
@@ -227,17 +223,20 @@ export function ChatContainer() {
           };
           setMessages((prev) => [...prev, safeBotMessage]);
           setIsLoading(false);
-        }, 600); // Artificial delay so it feels like it's scanning
+        }, 600);
         return;
       }
     } catch (e) {
-      // If URL parsing fails completely, let it fall through to the backend or error out
       console.log("Failed to parse hostname for whitelist check");
     }
 
     // --- 3. PROCEED TO BACKEND SCAN ---
     try {
-      const response = await fetch("http://127.0.0.1:5000/scan", {
+      // ---> THE DEPLOYMENT FIX IS HERE <---
+      // It looks for a Vercel variable first, then defaults to localhost.
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
+      const response = await fetch(`${apiUrl}/scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
