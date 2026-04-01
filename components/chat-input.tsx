@@ -3,19 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Clipboard, Send } from "lucide-react";
-import {
-  InputGroup,
-  InputGroupInput,
-  InputGroupAddon,
-} from "@/components/ui/input-group";
 
-// 1. Updated interface to match what ChatContainer is passing
 interface ChatInputProps {
   onSend: (url: string) => void;
   disabled: boolean;
 }
 
-// 2. Updated the destructured props here
 export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [inputValue, setInputValue] = useState("");
 
@@ -30,13 +23,12 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   const handleSend = () => {
     if (inputValue.trim()) {
-      onSend(inputValue.trim()); // 3. Updated function call
+      onSend(inputValue.trim());
       setInputValue("");
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // 4. Updated to use 'disabled' instead of 'isLoading'
     if (e.key === "Enter" && !e.shiftKey && !disabled) {
       e.preventDefault();
       handleSend();
@@ -44,43 +36,35 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t border-border bg-background">
-      <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex gap-3 w-full">
-          <InputGroup className="flex-1">
-            <InputGroupInput
-              placeholder="Paste a URL to scan for phishing..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={disabled} // 5. Updated prop
-              className="placeholder:text-muted-foreground"
-            />
-            <InputGroupAddon>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handlePaste}
-                disabled={disabled} // 6. Updated prop
-                className="h-full rounded-r-none border-0"
-                title="Paste from clipboard"
-              >
-                <Clipboard className="h-4 w-4" />
-              </Button>
-            </InputGroupAddon>
-          </InputGroup>
-          <Button
-            onClick={handleSend}
-            disabled={disabled || !inputValue.trim()} // 7. Updated prop
-            className="gap-2 bg-primary hover:bg-primary/90"
+    <div className="w-full">
+      <div className="flex gap-3 w-full">
+        <div className="relative flex-1 group">
+          <input
+            type="text"
+            placeholder="Paste a URL to scan for phishing..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={disabled}
+            className="w-full h-12 pl-4 pr-12 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-[#DB333D] transition-all text-[#000129] placeholder:text-gray-400 shadow-sm group-hover:border-gray-200"
+          />
+          <button
+            onClick={handlePaste}
+            disabled={disabled}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-[#DB333D] transition-colors"
+            title="Paste from clipboard"
           >
-            <Send className="h-4 w-4" />
-            <span className="hidden sm:inline">Scan</span>
-          </Button>
+            <Clipboard size={18} />
+          </button>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Enter a URL and press Enter or click Scan to check its safety
-        </p>
+        <Button
+          onClick={handleSend}
+          disabled={disabled || !inputValue.trim()}
+          className="h-12 px-6 gap-2 bg-[#DB333D] hover:bg-[#b02a32] text-white rounded-xl shadow-lg shadow-[#DB333D]/20 transition-all active:scale-95"
+        >
+          <Send size={18} />
+          <span className="font-bold">Scan URL</span>
+        </Button>
       </div>
     </div>
   );

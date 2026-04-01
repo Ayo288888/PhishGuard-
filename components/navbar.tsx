@@ -1,83 +1,45 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Shield, Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
+import Link from "next/link";
+import { Shield, User, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Shield className="h-6 w-6" />
+    <header className="bg-white border-b border-gray-100 h-16 flex items-center">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Shield className="text-[#DB333D]" size={28} />
+          <span className="text-xl sm:text-2xl font-bold">
+            <span className="text-[#DB333D]">Phishing</span>
+            <span className="text-[#000129]">Guard</span>
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-100">
+            <div className="w-8 h-8 rounded-full bg-[#DB333D] flex items-center justify-center text-white">
+              <User size={18} />
             </div>
-            <span className="hidden font-semibold text-foreground sm:inline">PhishGuard</span>
-          </Link>
-
-          {/* Desktop Menu */}
-          <div className="hidden items-center gap-8 md:flex">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition">
-              Home
-            </Link>
-            <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition">
-              Features
-            </Link>
-            <Link href="#services" className="text-sm text-muted-foreground hover:text-foreground transition">
-              Services
-            </Link>
-            <Link href="#about" className="text-sm text-muted-foreground hover:text-foreground transition">
-              About
-            </Link>
+            <span className="text-sm font-semibold text-[#000129] pr-1">
+              {user?.fullName || "User"}
+            </span>
           </div>
-
-          {/* Right Side */}
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link href="/dashboard">
-              <Button className="hidden sm:inline-flex">Launch App</Button>
-            </Link>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden"
-              aria-label="Toggle menu"
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
+          
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={logout}
+            className="text-gray-500 hover:text-[#DB333D] gap-2"
+          >
+            <LogOut size={18} />
+            <span className="hidden sm:inline">Logout</span>
+          </Button>
         </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="border-t border-border px-4 py-4 md:hidden">
-            <div className="flex flex-col gap-4">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-                Home
-              </Link>
-              <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground">
-                Features
-              </Link>
-              <Link href="#services" className="text-sm text-muted-foreground hover:text-foreground">
-                Services
-              </Link>
-              <Link href="#about" className="text-sm text-muted-foreground hover:text-foreground">
-                About
-              </Link>
-              <Link href="/dashboard">
-                <Button className="w-full">Launch App</Button>
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 }
