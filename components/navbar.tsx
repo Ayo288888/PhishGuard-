@@ -20,11 +20,11 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-[#DB333D] flex items-center justify-center text-white">
+          <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5 bg-gray-50 rounded-full border border-gray-100">
+            <div className="w-8 h-8 rounded-full bg-[#DB333D] flex items-center justify-center text-white shrink-0">
               <User size={18} />
             </div>
-            <span className="text-sm font-semibold text-[#000129] pr-1">
+            <span className="hidden sm:inline text-sm font-semibold text-[#000129] pr-1">
               {user?.fullName || "User"}
             </span>
           </div>

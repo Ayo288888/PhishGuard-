@@ -17,9 +17,9 @@ export function HistoryView({ type, messages }: HistoryViewProps) {
   });
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-[#000129] flex items-center gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#000129] flex items-center gap-3">
           {type === "phishing" ? (
             <>
               <ShieldAlert className="text-[#DB333D]" size={28} />
@@ -32,14 +32,14 @@ export function HistoryView({ type, messages }: HistoryViewProps) {
             </>
           )}
         </h2>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-500 mt-1 text-sm sm:text-base">
           Viewing all {type === "phishing" ? "malicious and suspicious" : "verified safe"} URLs detected by the system.
         </p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">URL Details</th>

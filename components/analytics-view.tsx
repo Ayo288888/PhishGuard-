@@ -63,10 +63,10 @@ export function AnalyticsView({ messages }: AnalyticsViewProps) {
   }
 
   return (
-    <div className="space-y-8 p-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-[#000129]">Security Analytics</h2>
-        <div className="flex gap-2">
+    <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#000129]">Security Analytics</h2>
+        <div className="flex flex-wrap gap-2">
           <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 flex items-center gap-1">
             <ShieldCheck size={14} /> {safe} Safe
           </span>

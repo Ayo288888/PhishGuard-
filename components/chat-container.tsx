@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Menu } from "lucide-react";
 import { ChatMessages } from "@/components/chat-messages";
 import { ChatInput } from "@/components/chat-input";
 import { Sidebar, DashboardTab } from "@/components/sidebar";
@@ -8,6 +9,8 @@ import { AnalyticsView } from "@/components/analytics-view";
 import { HistoryView } from "@/components/history-view";
 import { SystemLogsView } from "@/components/system-logs-view";
 import { useAuth } from "@/context/AuthContext";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export interface Message {
   id: string;
@@ -56,6 +59,7 @@ export function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<DashboardTab>("chat");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -110,12 +114,35 @@ export function ChatContainer() {
     fetchHistory();
   }, [user?.email]); // Use user?.email as dependency for better stability
 
+  const handleTabChange = (tab: DashboardTab) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false);
+  };
+
   const renderActiveTab = () => {
     switch (activeTab) {
       case "chat":
         return (
           <div className="flex-1 flex flex-col h-full bg-white shadow-inner">
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden relative">
+              {/* Mobile Menu Trigger */}
+              <div className="md:hidden absolute top-4 left-4 z-20">
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="bg-white/80 backdrop-blur-sm shadow-sm border-gray-200">
+                      <Menu size={20} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="p-0 w-64 border-none">
+                    <Sidebar
+                      activeTab={activeTab}
+                      setActiveTab={handleTabChange}
+                      onClearHistory={handleClearHistory}
+                      messages={messages}
+                    />
+                  </SheetContent>
+                </Sheet>
+              </div>
               <ChatMessages messages={messages} isLoading={isLoading} />
             </div>
             <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
@@ -130,28 +157,102 @@ export function ChatContainer() {
         );
       case "analytics":
         return (
-          <div className="flex-1 overflow-y-auto bg-gray-50/50">
-            <div className="max-w-6xl mx-auto">
+          <div className="flex-1 overflow-y-auto bg-gray-50/50 relative">
+             <div className="md:hidden absolute top-4 left-4 z-20">
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="bg-white/80 backdrop-blur-sm shadow-sm border-gray-200">
+                      <Menu size={20} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="p-0 w-64 border-none">
+                    <Sidebar
+                      activeTab={activeTab}
+                      setActiveTab={handleTabChange}
+                      onClearHistory={handleClearHistory}
+                      messages={messages}
+                    />
+                  </SheetContent>
+                </Sheet>
+              </div>
+            <div className="max-w-6xl mx-auto pt-16 md:pt-8">
               <AnalyticsView messages={messages} />
             </div>
           </div>
         );
       case "history-phishing":
         return (
-          <div className="flex-1 overflow-y-auto bg-white">
-            <HistoryView type="phishing" messages={messages} />
+          <div className="flex-1 overflow-y-auto bg-white relative">
+             <div className="md:hidden absolute top-4 left-4 z-20">
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="bg-white/80 backdrop-blur-sm shadow-sm border-gray-200">
+                      <Menu size={20} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="p-0 w-64 border-none">
+                    <Sidebar
+                      activeTab={activeTab}
+                      setActiveTab={handleTabChange}
+                      onClearHistory={handleClearHistory}
+                      messages={messages}
+                    />
+                  </SheetContent>
+                </Sheet>
+              </div>
+            <div className="pt-16 md:pt-0">
+              <HistoryView type="phishing" messages={messages} />
+            </div>
           </div>
         );
       case "history-non-phishing":
         return (
-          <div className="flex-1 overflow-y-auto bg-white">
-            <HistoryView type="non-phishing" messages={messages} />
+          <div className="flex-1 overflow-y-auto bg-white relative">
+             <div className="md:hidden absolute top-4 left-4 z-10">
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="bg-white/80 backdrop-blur-sm shadow-sm border-gray-200">
+                      <Menu size={20} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="p-0 w-64 border-none">
+                    <Sidebar
+                      activeTab={activeTab}
+                      setActiveTab={handleTabChange}
+                      onClearHistory={handleClearHistory}
+                      messages={messages}
+                    />
+                  </SheetContent>
+                </Sheet>
+              </div>
+            <div className="pt-16 md:pt-0">
+              <HistoryView type="non-phishing" messages={messages} />
+            </div>
           </div>
         );
       case "system-logs":
         return (
-          <div className="flex-1 overflow-y-auto bg-white">
-            <SystemLogsView />
+          <div className="flex-1 overflow-y-auto bg-white relative">
+             <div className="md:hidden absolute top-4 left-4 z-10">
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon" className="bg-white/80 backdrop-blur-sm shadow-sm border-gray-200">
+                      <Menu size={20} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="p-0 w-64 border-none">
+                    <Sidebar
+                      activeTab={activeTab}
+                      setActiveTab={handleTabChange}
+                      onClearHistory={handleClearHistory}
+                      messages={messages}
+                    />
+                  </SheetContent>
+                </Sheet>
+              </div>
+            <div className="pt-16 md:pt-0">
+              <SystemLogsView />
+            </div>
           </div>
         );
       default:
@@ -282,12 +383,14 @@ export function ChatContainer() {
 
   return (
     <div className="flex h-[calc(100vh-64px)] w-full bg-[#f8fafc] overflow-hidden">
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onClearHistory={handleClearHistory}
-        messages={messages}
-      />
+      <div className="hidden md:flex h-full">
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onClearHistory={handleClearHistory}
+          messages={messages}
+        />
+      </div>
       <main className="flex-1 flex flex-col min-w-0 relative">
         {renderActiveTab()}
       </main>
