@@ -21,12 +21,12 @@ interface LogEntry {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
-const ITEMS_PER_PAGE = 10;
 
 export function SystemLogsView() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -49,9 +49,9 @@ export function SystemLogsView() {
   }, []);
 
   // Pagination logic
-  const totalPages = Math.ceil(logs.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(logs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
   const currentLogs = logs.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
@@ -92,14 +92,36 @@ export function SystemLogsView() {
 
   return (
     <div className="p-4 sm:p-8">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-[#000129] flex items-center gap-3">
-          <Terminal className="text-[#DB333D]" size={28} />
-          System Logs
-        </h2>
-        <p className="text-gray-500 mt-1">
-          Detailed audit trail of user logins, URL detections, and session activities.
-        </p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-[#000129] flex items-center gap-3">
+            <Terminal className="text-[#DB333D]" size={28} />
+            System Logs
+          </h2>
+          <p className="text-gray-500 mt-1">
+            Detailed audit trail of user logins, URL detections, and session activities.
+          </p>
+        </div>
+        
+        {!isLoading && logs.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">Show</span>
+            <select 
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="bg-white border border-gray-200 rounded-md text-sm px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#DB333D]/20"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <span className="text-sm text-gray-500">per page</span>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
@@ -161,8 +183,8 @@ export function SystemLogsView() {
             </div>
 
             {/* Pagination Controls */}
-            {logs.length > ITEMS_PER_PAGE && (
-              <div className="p-4 border-t border-gray-100 flex items-center justify-between bg-white">
+            {logs.length > itemsPerPage && (
+              <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white">
                 <p className="text-sm text-gray-500">
                   Showing <span className="font-medium">{startIndex + 1}</span> to <span className="font-medium">{Math.min(endIndex, logs.length)}</span> of <span className="font-medium">{logs.length}</span> results
                 </p>
@@ -201,4 +223,5 @@ export function SystemLogsView() {
     </div>
   );
 }
+
 
