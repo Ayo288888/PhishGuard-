@@ -1,18 +1,22 @@
 "use client";
 
-import { MessageSquare, BarChart3, History, Trash2, Shield, ExternalLink } from "lucide-react";
+import { MessageSquare, BarChart3, History, Trash2, Shield, ExternalLink, ChevronDown, ChevronRight, Terminal, ShieldAlert, ShieldCheck } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Message } from "./chat-container";
 
+export type DashboardTab = "chat" | "analytics" | "history-phishing" | "history-non-phishing" | "system-logs";
+
 interface SidebarProps {
-  activeTab: "chat" | "analytics";
-  setActiveTab: (tab: "chat" | "analytics") => void;
+  activeTab: DashboardTab;
+  setActiveTab: (tab: DashboardTab) => void;
   onClearHistory: () => void;
   messages: Message[];
 }
 
 export function Sidebar({ activeTab, setActiveTab, onClearHistory, messages }: SidebarProps) {
+  const [isHistoryOpen, setIsHistoryOpen] = useState(true);
   const scanHistory = messages.filter(m => m.type === "bot" && m.analysis);
   const historyCount = scanHistory.length;
 
@@ -28,7 +32,7 @@ export function Sidebar({ activeTab, setActiveTab, onClearHistory, messages }: S
           <button
             onClick={() => setActiveTab("chat")}
             className={cn(
-              "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
+              "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left",
               activeTab === "chat" 
                 ? "bg-[#DB333D] text-white shadow-lg shadow-[#DB333D]/20" 
                 : "text-gray-400 hover:bg-white/5 hover:text-white"
@@ -38,10 +42,55 @@ export function Sidebar({ activeTab, setActiveTab, onClearHistory, messages }: S
             <span className="font-medium">Chat Assistant</span>
           </button>
 
+          {/* Detection History Dropdown */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+              className={cn(
+                "w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all text-gray-400 hover:bg-white/5 hover:text-white"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <History size={20} />
+                <span className="font-medium">Detection History</span>
+              </div>
+              {isHistoryOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </button>
+            
+            {isHistoryOpen && (
+              <div className="pl-6 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                <button
+                  onClick={() => setActiveTab("history-phishing")}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm text-left",
+                    activeTab === "history-phishing"
+                      ? "bg-[#DB333D]/20 text-[#DB333D] font-bold"
+                      : "text-gray-500 hover:text-white"
+                  )}
+                >
+                  <ShieldAlert size={16} />
+                  <span>Phishing URLs</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("history-non-phishing")}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm text-left",
+                    activeTab === "history-non-phishing"
+                      ? "bg-[#DB333D]/20 text-[#DB333D] font-bold"
+                      : "text-gray-500 hover:text-white"
+                  )}
+                >
+                  <ShieldCheck size={16} />
+                  <span>Non-Phishing URLs</span>
+                </button>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={() => setActiveTab("analytics")}
             className={cn(
-              "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
+              "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left",
               activeTab === "analytics" 
                 ? "bg-[#DB333D] text-white shadow-lg shadow-[#DB333D]/20" 
                 : "text-gray-400 hover:bg-white/5 hover:text-white"
@@ -49,6 +98,19 @@ export function Sidebar({ activeTab, setActiveTab, onClearHistory, messages }: S
           >
             <BarChart3 size={20} />
             <span className="font-medium">Analytics</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("system-logs")}
+            className={cn(
+              "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left",
+              activeTab === "system-logs" 
+                ? "bg-[#DB333D] text-white shadow-lg shadow-[#DB333D]/20" 
+                : "text-gray-400 hover:bg-white/5 hover:text-white"
+            )}
+          >
+            <Terminal size={20} />
+            <span className="font-medium">System Logs</span>
           </button>
         </nav>
       </div>

@@ -19,12 +19,36 @@ CORS(app)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_FILE = os.path.join(BASE_DIR, 'users.json')
 HISTORY_FILE = os.path.join(BASE_DIR, 'history.json')
+LOGS_FILE = os.path.join(BASE_DIR, 'system_logs.json')
 
 # Initialize storage files
-for file_path in [USERS_FILE, HISTORY_FILE]:
+for file_path in [USERS_FILE, HISTORY_FILE, LOGS_FILE]:
     if not os.path.exists(file_path):
         with open(file_path, 'w') as f:
-            json.dump({}, f)
+            if file_path == LOGS_FILE:
+                json.dump([], f)
+            else:
+                json.dump({}, f)
+
+
+def log_activity(activity_type, user_email, details):
+    try:
+        with open(LOGS_FILE, 'r+') as f:
+            logs = json.load(f)
+            from datetime import datetime
+            log_entry = {
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "type": activity_type,
+                "email": user_email,
+                "details": details
+            }
+            logs.append(log_entry)
+            f.seek(0)
+            json.dump(logs, f)
+            f.truncate()
+    except Exception as e:
+        print(f"Error logging activity: {e}")
+
 
 print("⚙️ Loading ML Models...")
 try:
@@ -95,7 +119,12 @@ def register():
         password), "full_name": name}
     with open(USERS_FILE, 'w') as f:
         json.dump(users, f)
-    return jsonify({"message": "User registered"})
+
+    log_activity("SIGNUP", email, "New user registered")
+    return jsonify({
+        "message": "User registered",
+        "user": {"email": email, "full_name": name}
+    })
 
 
 @app.route('/login', methods=['POST'])
@@ -106,6 +135,7 @@ def login():
         users = json.load(f)
     user = users.get(email)
     if user and check_password_hash(user['password'], password):
+        log_activity("LOGIN", email, "User logged in successfully")
         return jsonify({"user": {"email": email, "full_name": user['full_name']}})
     return jsonify({"error": "Invalid credentials"}), 401
 
@@ -182,6 +212,8 @@ def scan_url():
 def finalize_scan(result, user_email):
     if user_email:
         try:
+            log_activity("DETECTION", user_email,
+                         f"Analyzed URL: {result['target_url']} - Result: {result['status']}")
             with open(HISTORY_FILE, 'r+') as f:
                 history = json.load(f)
                 history.setdefault(user_email, []).append(result)
@@ -200,6 +232,16 @@ def get_history():
     with open(HISTORY_FILE, 'r') as f:
         history = json.load(f)
     return jsonify(history.get(email, []))
+
+
+@app.route('/system-logs', methods=['GET'])
+def get_system_logs():
+    try:
+        with open(LOGS_FILE, 'r') as f:
+            logs = json.load(f)
+        return jsonify(logs)
+    except Exception:
+        return jsonify([])
 
 
 if __name__ == '__main__':

@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { ChatMessages } from "@/components/chat-messages";
 import { ChatInput } from "@/components/chat-input";
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar, DashboardTab } from "@/components/sidebar";
 import { AnalyticsView } from "@/components/analytics-view";
+import { HistoryView } from "@/components/history-view";
+import { SystemLogsView } from "@/components/system-logs-view";
 import { useAuth } from "@/context/AuthContext";
 
 export interface Message {
@@ -53,7 +55,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
 export function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"chat" | "analytics">("chat");
+  const [activeTab, setActiveTab] = useState<DashboardTab>("chat");
   const { user } = useAuth();
 
   useEffect(() => {
@@ -107,6 +109,55 @@ export function ChatContainer() {
 
     fetchHistory();
   }, [user?.email]); // Use user?.email as dependency for better stability
+
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case "chat":
+        return (
+          <div className="flex-1 flex flex-col h-full bg-white shadow-inner">
+            <div className="flex-1 overflow-hidden">
+              <ChatMessages messages={messages} isLoading={isLoading} />
+            </div>
+            <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+              <div className="max-w-4xl mx-auto">
+                <ChatInput onSend={handleSendMessage} disabled={isLoading} />
+                <p className="text-[10px] text-gray-400 mt-3 text-center">
+                  PhishGuard AI can make mistakes. Verify important information.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      case "analytics":
+        return (
+          <div className="flex-1 overflow-y-auto bg-gray-50/50">
+            <div className="max-w-6xl mx-auto">
+              <AnalyticsView messages={messages} />
+            </div>
+          </div>
+        );
+      case "history-phishing":
+        return (
+          <div className="flex-1 overflow-y-auto bg-white">
+            <HistoryView type="phishing" messages={messages} />
+          </div>
+        );
+      case "history-non-phishing":
+        return (
+          <div className="flex-1 overflow-y-auto bg-white">
+            <HistoryView type="non-phishing" messages={messages} />
+          </div>
+        );
+      case "system-logs":
+        return (
+          <div className="flex-1 overflow-y-auto bg-white">
+            <SystemLogsView />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   const handleSendMessage = async (rawUrl: string) => {
     const url = rawUrl.trim();
@@ -238,27 +289,7 @@ export function ChatContainer() {
         messages={messages}
       />
       <main className="flex-1 flex flex-col min-w-0 relative">
-        {activeTab === "chat" ? (
-          <div className="flex-1 flex flex-col h-full bg-white shadow-inner">
-            <div className="flex-1 overflow-hidden">
-              <ChatMessages messages={messages} isLoading={isLoading} />
-            </div>
-            <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
-              <div className="max-w-4xl mx-auto">
-                <ChatInput onSend={handleSendMessage} disabled={isLoading} />
-                <p className="text-[10px] text-gray-400 mt-3 text-center">
-                  PhishGuard AI can make mistakes. Verify important information.
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto bg-gray-50/50">
-            <div className="max-w-6xl mx-auto">
-              <AnalyticsView messages={messages} />
-            </div>
-          </div>
-        )}
+        {renderActiveTab()}
       </main>
     </div>
   );

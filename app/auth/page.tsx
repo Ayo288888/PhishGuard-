@@ -1,12 +1,22 @@
 "use client";
 
 import { Shield, Mail, Phone, Twitter, Linkedin, Facebook, ArrowLeft, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 export default function AuthPage() {
+  const searchParams = useSearchParams();
   const [isSignIn, setIsSignIn] = useState(true);
+
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    if (mode === "signup") {
+      setIsSignIn(false);
+    }
+  }, [searchParams]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
